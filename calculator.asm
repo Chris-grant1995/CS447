@@ -110,6 +110,7 @@ oppS3:
 	beq $t9, 14,calc
 	beq $t9, 15, State_0
 calc:
+
 	addi $s5,$zero,0
 	addi $s6, $zero,0
 	beq $t2,12,calcMulti
@@ -123,10 +124,13 @@ calcMulti:
 	j finishCalc
 calcDivide: 
 	sub $t0,$t0,$t1
+	slti $s6,$t0,0
+	bne $s6,$zero, finishCalc
 	addi $t3,$t3,1
 	slti $s6,$t0,1
-	beq $s6,$zero, calcDivide
-	j finishCalc
+	bne $s6,$zero, finishCalc
+	
+	j calcDivide
 calcAdd:
 	add $t3, $t0,$t1
 	j finishCalc
@@ -137,14 +141,16 @@ finishCalc:
 	add $t8,$t3,$zero
 	beq $t9,14, finEQ
 	addi $t0,$t3, 0
-	add $t1,$zero,$zero
 	add $t3, $zero,$zero
+	add $t1,$zero,$zero
+	
 	add $t2, $t9,$zero
 	j State_2
 finEQ:
 	add $t2, $zero,$zero
 	add $t1,$zero,$zero
 	add $t9, $zero,$zero
+
 	j State_4w
 State_4w:
 	beq $t9,$zero,State_4w
@@ -164,11 +170,13 @@ OppS4:
 	beq $t9, 14,EqS4
 	beq $t9, 15 State_0
 	add $t0,$t3,$zero
+	add $t3, $zero,$zero
 	add $t1, $zero,$zero
 	add $t2,$t9,$zero
 	j State_2w
 EqS4:
 	add $t8,$t3, $zero
+	addi $t1,$zero,0
 	add $t3,$zero,$zero
 	add $t9, $zero,$zero
 	j State_4w
