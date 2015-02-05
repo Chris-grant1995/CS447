@@ -1,5 +1,4 @@
 .text
-
 State_0:
 	add $t9,$zero,0 #Set Keypad to 0
 	add $t8,$zero,0 #Set Display to 0
@@ -110,7 +109,6 @@ oppS3:
 	beq $t9, 14,calc
 	beq $t9, 15, State_0
 calc:
-
 	addi $s5,$zero,0
 	addi $s6, $zero,0
 	beq $t2,12,calcMulti
@@ -123,6 +121,9 @@ calcMulti:
 	bne $s5,$t1,calcMulti
 	j finishCalc
 calcDivide: 
+	slti $s7,$t0,0
+	beq $s7,1,divideNeg
+dividePos:
 	sub $t0,$t0,$t1
 	slti $s6,$t0,0
 	bne $s6,$zero, finishCalc
@@ -130,7 +131,17 @@ calcDivide:
 	slti $s6,$t0,1
 	bne $s6,$zero, finishCalc
 	
-	j calcDivide
+	j dividePos
+divideNeg:	
+	addi $s7,$zero,-1
+	add $t0,$t0,$t1
+	slt $t6,$zero,$t0
+	bne $s6,0,finishCalc
+	subi $t3,$t3,1
+	slt $s6,$s7,$t0
+	bne $s6,0,finishCalc
+	j divideNeg
+	
 calcAdd:
 	add $t3, $t0,$t1
 	j finishCalc
@@ -157,7 +168,6 @@ State_4w:
 State_4:
 	sll $t9,$t9,1
 	srl $t9,$t9,1
-	
 	slti $s1, $t9, 10
 	beq $s1, $zero, OppS4
 numS4:	
