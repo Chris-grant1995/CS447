@@ -4,8 +4,9 @@
 	char2: .asciiz " characters.\n"
 	lowPrompt: .asciiz "Specify start index: "
 	highPrompt: .asciiz "Specify End index: "
-	ending: .asciiz "Your substring is:"
+	ending: .asciiz "Your substring is:\n"
 	buffer: .space 64
+	substring: .space 64
 .text 
 	printGreeting:
 		addi $v0, $zero, 4
@@ -29,12 +30,34 @@
 		la $a0, char2
 		syscall
 		
+		addi $v0, $zero, 4
+		la $a0, lowPrompt
+		syscall
+		
+		addi $v0, $zero, 5
+		syscall
+		add $s1, $zero, $v0 #Lower Bound
+		
+		addi $v0, $zero, 4
+		la $a0, highPrompt
+		syscall
+		
+		addi $v0, $zero, 5
+		syscall
+		add $s2, $zero, $v0 #Higher Bound
+		
 		addi $v0,$zero,4
 		la $a0,ending
 		syscall
 		
+		la $a0, buffer
+		la $a1, substring
+		addi $a2,$s1,0
+		addi $a3,$s2,0
+		jal _subString
+		
 		addi $v0,$zero,4
-		la $a0,buffer
+		la $a0,substring
 		syscall
 		
 		addi $v0,$zero,10
@@ -69,3 +92,41 @@
 		exit:
 			addi $v0,$t0,0
 			jr $ra
+	_subString:
+		addi $t9, $ra,0
+		addi $t8, $a1,0
+		addi $t7,$zero,0#Counter for substring
+		addi $t6, $a2,0#Counter for string
+		slti $t0,$a2,0
+		bne $t0,$zero,null
+		slti $t0,$a3,0
+		bne $t0,$zero,null
+		slt $t0,$a2,$s0
+		beq $t0,$zero,null
+		slt $t0,$a3,$s0
+		beq $t0,$zero,higherBound
+	returnHigherBound:
+		slt $t0,$a2,$a3
+		beq $t0,$zero,null
+		j subloop
+		
+		higherBound:
+			addi $a3,$s0,0
+			j returnHigherBound
+			
+		subloop:
+			lb $t1,buffer($t6)
+			sb $t1, substring($t7)
+			addi $t6,$t6,1
+			addi $t7,$t7,1
+			beq $t6,$a3,null
+			j subloop
+	null:
+		sb $zero substring($t7)
+		j finish
+			
+					
+	finish:
+		addi $ra,$t9,0
+		addi $v0,$t8,0
+		jr $ra
