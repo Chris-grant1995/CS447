@@ -1,0 +1,2 @@
+Determine the force due to hydrostatic pressure on the flat vertical side of a tank which has the shape in feet of the boundaries 
+Determine the force due to hydrostatic pressure on the flat vertical side of a tank which has the shape in feet of the boundaries 
